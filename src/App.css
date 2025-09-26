@@ -33,7 +33,7 @@
   margin: 0 0 0.3rem 0;
   letter-spacing: -0.02em;
 }
-.brand-red { color: var(--red); }
+.brand-red { color: #b8002a; }
 .brand-biller { color: #ffffff; }
 
 .subtitle {

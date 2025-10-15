@@ -40,16 +40,18 @@ export default function SpinWheel({
   const [rotation, setRotation] = useState(0);
   const spinRef = useRef(null);
 
-  // Schedule exactly 3 wins per 10 spins using predetermined indices per block
+  // Schedule wins per 10 spins using predetermined indices per block
   const scheduleRef = useRef({
     spinsInBlock: 0,
     winsInBlock: 0,
     winIndices: null,
   });
+  // Global wins cutoff counter (after 15 wins -> all lose)
+  const globalWinsRef = useRef(0);
 
   function generateWinIndices() {
     const indices = new Set();
-    while (indices.size < 3) {
+    while (indices.size < 2) {
       indices.add(randomInt(0, 9));
     }
     return indices; // values in [0..9]
@@ -78,7 +80,16 @@ export default function SpinWheel({
       return choice?.i ?? 0;
     }
 
-    // Enforce 3 wins per 10 spins
+    // Global cutoff: after 15 wins, always lose
+    if (globalWinsRef.current >= 15) {
+      const pool = SEGMENTS.map((s, i) => ({ i, s })).filter(
+        ({ s }) => !WIN_SEGMENTS.has(s)
+      );
+      const index = pool[randomInt(0, pool.length - 1)].i;
+      return index;
+    }
+
+    // Enforce 2 wins per 10 spins
     if (enforceThreeWinsPerTen) {
       const { spinsInBlock } = scheduleRef.current;
       if (!scheduleRef.current.winIndices || spinsInBlock === 0) {
@@ -120,6 +131,10 @@ export default function SpinWheel({
 
       // Update schedule
       scheduleRef.current.spinsInBlock += 1;
+      if (WIN_SEGMENTS.has(result)) {
+        scheduleRef.current.winsInBlock += 1;
+        globalWinsRef.current += 1;
+      }
       if (scheduleRef.current.spinsInBlock >= 10) {
         scheduleRef.current.spinsInBlock = 0;
         scheduleRef.current.winsInBlock = 0;

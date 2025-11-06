@@ -1,25 +1,27 @@
 import { useMemo, useRef, useState } from "react";
 
 const SEGMENTS = [
-  "AirPods",
-  "Mouse",
+  "Oops!!!",
+  "Books and pen",
   "Powerbank",
-  "Mousepad",
   "Speaker",
+  "Umbrella",
   "Bottle",
+  "Keyboard",
   "Better luck next time",
-  "Try again",
-  "₦0",
 ];
 
 const WIN_SEGMENTS = new Set([
-  "AirPods",
-  "Mouse",
+  "Books and pen",
   "Powerbank",
-  "Mousepad",
   "Speaker",
+  "Umbrella",
   "Bottle",
+  "Keyboard",
 ]);
+
+// Items that can only be won once
+const ONE_TIME_WINS = new Set(["Powerbank", "Speaker"]);
 
 function getSegmentAngle(index, total) {
   // Rotate labels to the CENTER of each slice (not the boundary)
@@ -40,21 +42,24 @@ export default function SpinWheel({
   const [rotation, setRotation] = useState(0);
   const spinRef = useRef(null);
 
-  // Schedule wins per 10 spins using predetermined indices per block
+  // Track total wins (max 15 per refresh)
+  const globalWinsRef = useRef(0);
+  // Track which one-time items have been won
+  const wonOneTimeItemsRef = useRef(new Set());
+  // Schedule 3 wins per 10 spins
   const scheduleRef = useRef({
     spinsInBlock: 0,
     winsInBlock: 0,
-    winIndices: null,
+    winIndices: null, // Set of indices (0-9) that should be wins in this block
   });
-  // Global wins cutoff counter (after 15 wins -> all lose)
-  const globalWinsRef = useRef(0);
 
   function generateWinIndices() {
+    // Generate 3 random positions (0-9) for wins in the next 10 spins
     const indices = new Set();
-    while (indices.size < 2) {
+    while (indices.size < 3) {
       indices.add(randomInt(0, 9));
     }
-    return indices; // values in [0..9]
+    return indices;
   }
 
   const colors = useMemo(() => {
@@ -73,8 +78,17 @@ export default function SpinWheel({
     // Force outcome if requested
     if (forceOutcome !== "auto") {
       const wantWin = forceOutcome === "win";
+      // Get available win segments (excluding already won one-time items)
+      const availableWins = SEGMENTS.filter(
+        (s) =>
+          WIN_SEGMENTS.has(s) &&
+          (!ONE_TIME_WINS.has(s) || !wonOneTimeItemsRef.current.has(s))
+      );
       const candidates = SEGMENTS.map((s, i) => ({ i, s })).filter(({ s }) =>
-        wantWin ? WIN_SEGMENTS.has(s) : !WIN_SEGMENTS.has(s)
+        wantWin
+          ? availableWins.includes(s)
+          : !WIN_SEGMENTS.has(s) ||
+            (ONE_TIME_WINS.has(s) && wonOneTimeItemsRef.current.has(s))
       );
       const choice = candidates[randomInt(0, candidates.length - 1)];
       return choice?.i ?? 0;
@@ -89,23 +103,51 @@ export default function SpinWheel({
       return index;
     }
 
-    // Enforce 2 wins per 10 spins
-    if (enforceThreeWinsPerTen) {
-      const { spinsInBlock } = scheduleRef.current;
-      if (!scheduleRef.current.winIndices || spinsInBlock === 0) {
-        scheduleRef.current.winIndices = generateWinIndices();
-      }
+    // Get available win segments (excluding already won one-time items)
+    const availableWins = SEGMENTS.filter(
+      (s) =>
+        WIN_SEGMENTS.has(s) &&
+        (!ONE_TIME_WINS.has(s) || !wonOneTimeItemsRef.current.has(s))
+    );
 
-      const mustWin = scheduleRef.current.winIndices.has(spinsInBlock);
-      const pool = SEGMENTS.map((s, i) => ({ i, s })).filter(({ s }) =>
-        mustWin ? WIN_SEGMENTS.has(s) : !WIN_SEGMENTS.has(s)
+    // If no wins available, always lose
+    if (availableWins.length === 0) {
+      const pool = SEGMENTS.map((s, i) => ({ i, s })).filter(
+        ({ s }) => !WIN_SEGMENTS.has(s)
       );
       const index = pool[randomInt(0, pool.length - 1)].i;
       return index;
     }
 
-    // Default random
-    return randomInt(0, total - 1);
+    // Initialize or reset schedule for new block of 10 spins
+    if (
+      !scheduleRef.current.winIndices ||
+      scheduleRef.current.spinsInBlock === 0
+    ) {
+      scheduleRef.current.winIndices = generateWinIndices();
+    }
+
+    // Check if this spin should be a win (based on schedule)
+    const mustWin = scheduleRef.current.winIndices.has(
+      scheduleRef.current.spinsInBlock
+    );
+
+    // Also check if we haven't reached 15 wins yet
+    const canWin = globalWinsRef.current < 15 && availableWins.length > 0;
+
+    if (mustWin && canWin) {
+      // Pick a random available win segment
+      const winSegment = availableWins[randomInt(0, availableWins.length - 1)];
+      const winIndex = SEGMENTS.indexOf(winSegment);
+      return winIndex;
+    } else {
+      // Choose a non-win segment
+      const pool = SEGMENTS.map((s, i) => ({ i, s })).filter(
+        ({ s }) => !WIN_SEGMENTS.has(s)
+      );
+      const index = pool[randomInt(0, pool.length - 1)].i;
+      return index;
+    }
   }
 
   function spin() {
@@ -128,21 +170,32 @@ export default function SpinWheel({
     window.clearTimeout(spinRef.current);
     spinRef.current = window.setTimeout(() => {
       const result = SEGMENTS[targetIndex];
+      const isWin = WIN_SEGMENTS.has(result);
 
-      // Update schedule
-      scheduleRef.current.spinsInBlock += 1;
-      if (WIN_SEGMENTS.has(result)) {
-        scheduleRef.current.winsInBlock += 1;
+      // Track wins
+      if (isWin) {
         globalWinsRef.current += 1;
+        // Track one-time wins
+        if (ONE_TIME_WINS.has(result)) {
+          wonOneTimeItemsRef.current.add(result);
+        }
       }
+
+      // Update schedule tracking
+      scheduleRef.current.spinsInBlock += 1;
+      if (isWin) {
+        scheduleRef.current.winsInBlock += 1;
+      }
+
+      // Reset after 10 spins
       if (scheduleRef.current.spinsInBlock >= 10) {
         scheduleRef.current.spinsInBlock = 0;
         scheduleRef.current.winsInBlock = 0;
-        scheduleRef.current.winIndices = null; // regenerate next block
+        scheduleRef.current.winIndices = null; // Will regenerate on next spin
       }
 
       setIsSpinning(false);
-      onResult?.(result, WIN_SEGMENTS.has(result));
+      onResult?.(result, isWin);
     }, durationMs);
   }
 

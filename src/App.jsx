@@ -4,7 +4,7 @@ import SpinWheel from "./components/SpinWheel";
 
 function App() {
   // Dev-only override: set to "auto" | "win" | "lose". Comment or change as needed.
-  const FORCE_OUTCOME = "lose";
+  const FORCE_OUTCOME = "auto";
   const [celebrate, setCelebrate] = useState({
     show: false,
     prize: "",

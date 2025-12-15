@@ -91,9 +91,16 @@
 .brand-section {
   text-align: center;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex-direction: row;
+  gap: 0rem;
   align-items: center;
+  justify-content: center;
+}
+
+.logo-container {
+  width: clamp(80px, 15vw, 150px);
+  height: clamp(80px, 15vw, 150px);
+  flex-shrink: 0;
 }
 
 .brand-title {
@@ -104,24 +111,7 @@
   margin: 0;
   letter-spacing: 0.02em;
   text-transform: lowercase;
-  text-shadow: 0 0 30px rgba(0, 172, 180, 0.5),
-               0 0 60px rgba(0, 172, 180, 0.3),
-               0 4px 20px rgba(0, 0, 0, 0.5);
-  animation: glow-pulse 3s ease-in-out infinite;
   line-height: 0.9;
-}
-
-@keyframes glow-pulse {
-  0%, 100% {
-    text-shadow: 0 0 30px rgba(0, 172, 180, 0.5),
-                 0 0 60px rgba(0, 172, 180, 0.3),
-                 0 4px 20px rgba(0, 0, 0, 0.5);
-  }
-  50% {
-    text-shadow: 0 0 40px rgba(0, 172, 180, 0.7),
-                 0 0 80px rgba(0, 172, 180, 0.5),
-                 0 4px 20px rgba(0, 0, 0, 0.5);
-  }
 }
 
 .spin-to-win-section {

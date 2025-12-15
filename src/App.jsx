@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import "./App.css";
 import SpinWheel from "./components/SpinWheel";
 import LandingPage from "./components/LandingPage";
+import BeamerLogo from "./components/BeamerLogo";
 
 function App() {
   const [showLanding, setShowLanding] = useState(true);
@@ -80,7 +81,7 @@ function App() {
     <div className="app">
       <div className="top-header">
         <div className="beamer-logo-small">
-          <span className="logo-beamer-small">beamer</span>
+          <BeamerLogo className="header-logo" />
         </div>
         <div className="timer-top-left">Time: {timeDisplay}</div>
         <div className="session-badge-top">Session {currentSession}</div>

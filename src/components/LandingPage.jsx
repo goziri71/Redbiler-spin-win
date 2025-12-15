@@ -1,4 +1,5 @@
 import "./LandingPage.css";
+import BeamerLogo from "./BeamerLogo";
 
 export default function LandingPage({ onStart }) {
   return (
@@ -11,6 +12,9 @@ export default function LandingPage({ onStart }) {
       
       <div className="landing-content">
         <div className="brand-section">
+          <div className="logo-container">
+            <BeamerLogo />
+          </div>
           <h1 className="brand-title">beamer</h1>
         </div>
 

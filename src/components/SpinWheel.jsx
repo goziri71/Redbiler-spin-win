@@ -5,9 +5,9 @@ const PRIZE_DISTRIBUTION = [
   300000, // 1x ₦300,000
   200000, // 1x ₦200,000
   100000, // 1x ₦100,000
-  50000,  // 2x ₦50,000
+  50000, // 2x ₦50,000
   50000,
-  20000,  // 15x ₦20,000
+  20000, // 15x ₦20,000
   20000,
   20000,
   20000,
@@ -26,6 +26,12 @@ const PRIZE_DISTRIBUTION = [
 
 const TOTAL_GUESTS = 400;
 const SESSION_DURATION_MS = 10 * 60 * 1000; // 10 minutes
+
+// Special guest configuration per session
+const SPECIAL_GUESTS = {
+  1: { guestNumber: 262, prizeAmount: 50000 }, // Session 1: Guest #262 wins ₦50,000
+  2: { guestNumber: 175, prizeAmount: 200000 }, // Session 2: Guest #175 wins ₦200,000
+};
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -75,7 +81,7 @@ export default function SpinWheel({
   const spinRef = useRef(null);
   const timerRef = useRef(null);
   const [timeRemaining, setTimeRemaining] = useState(SESSION_DURATION_MS);
-  
+
   // Track won guests across both sessions (persists)
   const wonGuestsRef = useRef(new Set());
 
@@ -88,16 +94,12 @@ export default function SpinWheel({
     setRotation(0);
   }, [currentSession]);
 
-  // Update parent with time display
-  useEffect(() => {
-    const minutes = Math.floor(timeRemaining / 60000);
-    const seconds = Math.floor((timeRemaining % 60000) / 1000);
-    const display = `${minutes}:${seconds.toString().padStart(2, "0")}`;
-    onTimeUpdate?.(display);
-  }, [timeRemaining, onTimeUpdate]);
-
   // Session timer
   useEffect(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
     if (timeRemaining <= 0) {
       onSessionEnd?.();
       return;
@@ -119,7 +121,7 @@ export default function SpinWheel({
         clearInterval(timerRef.current);
       }
     };
-  }, [currentSession, onSessionEnd]); // Only restart when session changes
+  }, [currentSession, onSessionEnd]);
 
   // Update parent with time display
   useEffect(() => {
@@ -130,10 +132,32 @@ export default function SpinWheel({
   }, [timeRemaining, onTimeUpdate]);
 
   const total = prizes.length;
-  const availablePrizes = prizes.filter((_, index) => !wonPrizes.has(index));
-  const availableGuests = Array.from({ length: TOTAL_GUESTS }, (_, i) => i + 1).filter(
-    (guestNum) => !wonGuestsRef.current.has(guestNum)
-  );
+  const availablePrizesIndices = Array.from(
+    { length: total },
+    (_, i) => i
+  ).filter((i) => !wonPrizes.has(i));
+
+  // Get special guest config for current session
+  const specialGuestConfig = SPECIAL_GUESTS[currentSession];
+
+  // Build available guests list
+  // Exclude special guest from random selection unless:
+  // 1. It's their special prize, OR
+  // 2. They've already won
+  const allAvailableGuests = Array.from(
+    { length: TOTAL_GUESTS },
+    (_, i) => i + 1
+  ).filter((guestNum) => !wonGuestsRef.current.has(guestNum));
+
+  // For random selection, exclude special guest if they haven't won yet
+  // (They'll be assigned when their special prize is won)
+  const availableGuests =
+    specialGuestConfig &&
+    !wonGuestsRef.current.has(specialGuestConfig.guestNumber)
+      ? allAvailableGuests.filter(
+          (guestNum) => guestNum !== specialGuestConfig.guestNumber
+        )
+      : allAvailableGuests;
 
   const colors = useMemo(() => {
     const palette = [
@@ -163,14 +187,20 @@ export default function SpinWheel({
 
   function spin() {
     if (isSpinning) return;
-    
+
     // Check if prizes or guests are available
-    if (availablePrizes.length === 0) {
+    if (availablePrizesIndices.length === 0) {
       alert("All prizes have been won in this session!");
       return;
     }
-    
-    if (availableGuests.length === 0) {
+
+    // Check if we have available guests (including special guest if they haven't won)
+    const hasAvailableGuests =
+      availableGuests.length > 0 ||
+      (specialGuestConfig &&
+        !wonGuestsRef.current.has(specialGuestConfig.guestNumber));
+
+    if (!hasAvailableGuests) {
       alert("All guests have already won!");
       return;
     }
@@ -193,19 +223,44 @@ export default function SpinWheel({
     window.clearTimeout(spinRef.current);
     spinRef.current = window.setTimeout(() => {
       const prizeAmount = prizes[targetIndex];
-      
-      // Randomly select guest number from available guests
-      const randomGuestIndex = randomInt(0, availableGuests.length - 1);
-      const guestNumber = availableGuests[randomGuestIndex];
+
+      // Determine which guest wins this prize
+      let guestNumber;
+
+      // Check if this is a special prize for the current session
+      if (
+        specialGuestConfig &&
+        prizeAmount === specialGuestConfig.prizeAmount &&
+        !wonGuestsRef.current.has(specialGuestConfig.guestNumber)
+      ) {
+        // Assign to special guest
+        guestNumber = specialGuestConfig.guestNumber;
+      } else {
+        // Random selection from available guests
+        if (availableGuests.length === 0) {
+          // Fallback: use all available guests if special guest exclusion left none
+          const fallbackGuests = allAvailableGuests;
+          if (fallbackGuests.length === 0) {
+            alert("No available guests!");
+            setIsSpinning(false);
+            return;
+          }
+          const randomGuestIndex = randomInt(0, fallbackGuests.length - 1);
+          guestNumber = fallbackGuests[randomGuestIndex];
+        } else {
+          const randomGuestIndex = randomInt(0, availableGuests.length - 1);
+          guestNumber = availableGuests[randomGuestIndex];
+        }
+      }
 
       // Mark prize as won
       setWonPrizes((prev) => new Set([...prev, targetIndex]));
-      
+
       // Mark guest as won (persists across sessions)
       wonGuestsRef.current.add(guestNumber);
 
       setIsSpinning(false);
-      
+
       // Call onResult with guest number, prize amount, and color
       onResult?.(guestNumber, prizeAmount, getPrizeColor(prizeAmount));
     }, durationMs);
@@ -223,7 +278,7 @@ export default function SpinWheel({
 
   return (
     <div className="wheel-container">
-        <div className="wheel-wrapper">
+      <div className="wheel-wrapper">
         <svg
           className="wheel"
           viewBox={viewBox}
@@ -239,7 +294,7 @@ export default function SpinWheel({
             const y2 = center.y + radius * Math.sin(endAngle);
             const largeArc = sliceAngle > Math.PI ? 1 : 0;
             const path = `M ${center.x} ${center.y} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z`;
-            
+
             return (
               <g key={`${i}-${prizeAmount}`}>
                 <path
@@ -256,7 +311,9 @@ export default function SpinWheel({
                   }, ${center.y})`}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  className={`segment-label vertical ${isWon ? "won-text" : ""}`}
+                  className={`segment-label vertical ${
+                    isWon ? "won-text" : ""
+                  }`}
                 >
                   {formatCurrency(prizeAmount)}
                 </text>
@@ -271,13 +328,21 @@ export default function SpinWheel({
         <button
           className="spin-btn"
           onClick={spin}
-          disabled={isSpinning || availablePrizes.length === 0 || availableGuests.length === 0}
+          disabled={
+            isSpinning ||
+            availablePrizesIndices.length === 0 ||
+            (availableGuests.length === 0 &&
+              (!specialGuestConfig ||
+                wonGuestsRef.current.has(specialGuestConfig.guestNumber)))
+          }
         >
           {isSpinning
             ? "Spinning..."
-            : availablePrizes.length === 0
+            : availablePrizesIndices.length === 0
             ? "All Prizes Won"
-            : availableGuests.length === 0
+            : availableGuests.length === 0 &&
+              (!specialGuestConfig ||
+                wonGuestsRef.current.has(specialGuestConfig.guestNumber))
             ? "All Guests Won"
             : "Spin"}
         </button>

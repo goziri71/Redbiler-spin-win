@@ -12,12 +12,10 @@ export default function LandingPage({ onStart }) {
       <div className="landing-content">
         <div className="brand-section">
           <h1 className="brand-title">beamer</h1>
-          <p className="brand-subtitle">MICROFINANCE BANK</p>
-          <p className="brand-website">www.beamer.com</p>
         </div>
 
-        <div className="welcome-section">
-          <p className="welcome-text">You are Welcome</p>
+        <div className="spin-to-win-section">
+          <h2 className="spin-to-win-title">Spin to Win</h2>
         </div>
 
         <button className="start-btn" onClick={onStart}>

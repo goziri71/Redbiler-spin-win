@@ -512,8 +512,15 @@
   height: 100%;
 }
 
-.timer-top-left {
+.header-left-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   margin-right: auto;
+}
+
+.timer-top-left {
+  margin-right: 0;
 }
 
 .session-badge-top {
@@ -826,6 +833,29 @@
   color: var(--muted);
   font-size: 0.95rem;
 }
+
+.start-session-btn-header {
+  background: linear-gradient(90deg, var(--primary-teal), var(--primary-dark));
+  border: 2px solid var(--primary-teal);
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 172, 180, 0.4);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+}
+
+.start-session-btn-header:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 172, 180, 0.5);
+}
+
 .confetti {
   position: absolute;
   inset: -40%;

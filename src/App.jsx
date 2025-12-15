@@ -25,6 +25,7 @@ function App() {
     // Clear any existing timeout
     if (celebrateTimeoutRef.current) {
       clearTimeout(celebrateTimeoutRef.current);
+      celebrateTimeoutRef.current = null;
     }
 
     setCelebrate({
@@ -33,17 +34,6 @@ function App() {
       prizeAmount,
       prizeColor,
     });
-
-    // Auto-close after 10 seconds (increased from 5)
-    celebrateTimeoutRef.current = window.setTimeout(() => {
-      setCelebrate({
-        show: false,
-        guestNumber: null,
-        prizeAmount: null,
-        prizeColor: null,
-      });
-      celebrateTimeoutRef.current = null;
-    }, 10000);
   }
 
   function handleCloseCelebration() {
@@ -59,6 +49,11 @@ function App() {
       prizeAmount: null,
       prizeColor: null,
     });
+  }
+
+  function handleStartSession2() {
+    handleCloseCelebration();
+    setCurrentSession(2);
   }
 
   function handleSessionEnd() {
@@ -83,7 +78,17 @@ function App() {
         <div className="beamer-logo-small">
           <BeamerLogo className="header-logo" />
         </div>
-        <div className="timer-top-left">Time: {timeDisplay}</div>
+        <div className="header-left-section">
+          <div className="timer-top-left">Time: {timeDisplay}</div>
+          {currentSession === 1 && (
+            <button
+              className="start-session-btn-header"
+              onClick={handleStartSession2}
+            >
+              Start Session 2
+            </button>
+          )}
+        </div>
         <div className="session-badge-top">Session {currentSession}</div>
       </div>
 

@@ -1,62 +1,561 @@
-/* Gen Z red/black theme */
+/* Beamer color palette theme - Dark Game Mode */
 :root {
-  --bg: #0a0a0a;
-  --card: #141414;
+  --primary-teal: #00acb4;
+  --primary-dark: #393e46;
+  --secondary-light: #edeced;
+  --secondary-orange: #f7931e;
+  
+  --bg: #2a2e35;
+  --card: #1f2328;
   --text: #f2f2f2;
   --muted: #9b9b9b;
-  --red: #ff0033;
-  --red-2: #b8002a;
-  --near-black: #111111;
-  --shadow: 0 10px 30px rgba(255, 0, 51, 0.2);
-  --wheel-size: min(86vw, 520px);
+  --near-black: #1a1d22;
+  --shadow: 0 10px 30px rgba(0, 172, 180, 0.3);
+  --wheel-size: min(90vw, 75vh, 600px);
   --wheel-margin: calc(var(--wheel-size) * 0.04);
 }
 
+/* Large LED Display / Large Screens (1920px and above) */
+@media (min-width: 1920px) {
+  :root {
+    --wheel-size: min(55vw, 70vh, 900px);
+  }
+  
+  .wheel-container {
+    gap: 1.5rem;
+  }
+  
+  .title {
+    font-size: clamp(2.5rem, 3vh, 4rem);
+  }
+  
+  .subtitle {
+    font-size: clamp(1rem, 1.2vh, 1.3rem);
+  }
+  
+  .session-badge-top {
+    font-size: 1.1rem;
+    padding: 0.6rem 1.5rem;
+  }
+  
+  .timer-top-left {
+    font-size: 1.8rem;
+    padding: 0.8rem 1.5rem;
+  }
+  
+  .spin-btn {
+    font-size: 1.1rem;
+    padding: 0.8rem 3rem;
+  }
+  
+  .segment-label {
+    font-size: clamp(14px, 1.2vw, 18px);
+  }
+  
+  .celebrate-card {
+    min-width: 400px;
+    padding: 2rem 2.5rem;
+  }
+  
+  .celebrate-card h2 {
+    font-size: 2rem;
+  }
+  
+  .guest-number {
+    font-size: 2rem;
+  }
+  
+  .prize-amount {
+    font-size: 1.6rem;
+  }
+  
+  .prize-amount b {
+    font-size: 2rem;
+  }
+}
+
+/* Extra Large Displays (2560px and above - 4K, Large LED) */
+@media (min-width: 2560px) {
+  :root {
+    --wheel-size: min(50vw, 65vh, 1100px);
+  }
+  
+  .wheel-container {
+    gap: 2rem;
+  }
+  
+  .title {
+    font-size: clamp(3rem, 2.5vh, 5rem);
+  }
+  
+  .subtitle {
+    font-size: clamp(1.2rem, 1vh, 1.6rem);
+  }
+  
+  .session-badge-top {
+    font-size: 1.3rem;
+    padding: 0.8rem 2rem;
+  }
+  
+  .timer-top-left {
+    font-size: 2.2rem;
+    padding: 1rem 2rem;
+  }
+  
+  .spin-btn {
+    font-size: 1.3rem;
+    padding: 1rem 4rem;
+  }
+  
+  .segment-label {
+    font-size: clamp(16px, 1vw, 22px);
+  }
+  
+  .celebrate-card {
+    min-width: 500px;
+    padding: 2.5rem 3rem;
+  }
+  
+  .celebrate-card h2 {
+    font-size: 2.5rem;
+  }
+  
+  .guest-number {
+    font-size: 2.5rem;
+  }
+  
+  .prize-amount {
+    font-size: 2rem;
+  }
+  
+  .prize-amount b {
+    font-size: 2.5rem;
+  }
+}
+
+/* Ultra Large Displays (3840px and above - Ultra-wide LED) */
+@media (min-width: 3840px) {
+  :root {
+    --wheel-size: min(40vw, 60vh, 1400px);
+  }
+  
+  .wheel-container {
+    gap: 2.5rem;
+  }
+  
+  .title {
+    font-size: clamp(3.5rem, 2vh, 6rem);
+  }
+  
+  .subtitle {
+    font-size: clamp(1.4rem, 0.9vh, 1.8rem);
+  }
+  
+  .session-badge-top {
+    font-size: 1.5rem;
+    padding: 1rem 2.5rem;
+  }
+  
+  .timer-top-left {
+    font-size: 2.8rem;
+    padding: 1.2rem 3rem;
+  }
+  
+  .spin-btn {
+    font-size: 1.5rem;
+    padding: 1.2rem 5rem;
+  }
+  
+  .segment-label {
+    font-size: clamp(18px, 0.8vw, 26px);
+  }
+  
+  .celebrate-card {
+    min-width: 600px;
+    padding: 3rem 4rem;
+  }
+  
+  .celebrate-card h2 {
+    font-size: 3rem;
+  }
+  
+  .guest-number {
+    font-size: 3rem;
+  }
+  
+  .prize-amount {
+    font-size: 2.4rem;
+  }
+  
+  .prize-amount b {
+    font-size: 3rem;
+  }
+}
+
+/* Small Phones (up to 480px) */
+@media (max-width: 480px) {
+  :root {
+    --wheel-size: min(88vw, 65vh, 450px);
+  }
+  
+  .app {
+    padding: 6rem 0.5rem 0.5rem 0.5rem;
+  }
+  
+  .top-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    top: 0.5rem;
+    left: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  .beamer-logo-small {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    order: 1;
+    width: auto;
+    justify-content: center;
+  }
+  
+  .timer-top-left {
+    order: 2;
+    margin-right: auto;
+    flex: 0 0 auto;
+  }
+  
+  .session-badge-top {
+    order: 3;
+    margin-left: auto;
+    flex: 0 0 auto;
+  }
+  
+  .logo-beamer-small {
+    font-size: clamp(1rem, 2vh, 1.4rem);
+  }
+  
+  .timer-top-left {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.8rem;
+  }
+  
+  .session-badge-top {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.8rem;
+  }
+  
+  .app {
+    padding: 0.5rem;
+    min-height: 100vh;
+    max-height: 100vh;
+  }
+  
+  .wheel-container {
+    padding: 0 0.5rem;
+    gap: 0.8rem;
+  }
+  
+  .title {
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .subtitle {
+    font-size: clamp(0.85rem, 3vw, 1rem);
+    margin: 0 0 1rem 0;
+  }
+  
+  .session-info {
+    gap: 0.4rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .session-badge-top {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.8rem;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  .timer-top-left {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    top: 0.5rem;
+    left: 0.5rem;
+  }
+  
+  .wheel-wrapper {
+    margin: 0 auto 0.5rem;
+  }
+  
+  .segment-label {
+    font-size: clamp(8px, 2.5vw, 11px);
+  }
+  
+  .pointer {
+    border-left-width: clamp(8px, 2vw, 12px);
+    border-right-width: clamp(8px, 2vw, 12px);
+    border-bottom-width: clamp(12px, 2.5vw, 18px);
+  }
+  
+  .spin-btn {
+    font-size: 0.85rem;
+    padding: 0.6rem 1.5rem;
+    letter-spacing: 0.3em;
+    width: 90%;
+    max-width: 280px;
+  }
+  
+  .celebrate-card {
+    min-width: 90%;
+    max-width: 320px;
+    padding: 1.2rem 1.4rem;
+    margin: 1rem;
+  }
+  
+  .celebrate-card h2 {
+    font-size: 1.3rem;
+    margin: 0 0 0.6rem 0;
+  }
+  
+  .guest-number {
+    font-size: 1.2rem;
+    margin: 0.6rem 0 0.3rem 0;
+  }
+  
+  .prize-amount {
+    font-size: 1rem;
+  }
+  
+  .prize-amount b {
+    font-size: 1.2rem;
+  }
+}
+
+/* Very Small Phones (up to 360px) */
+@media (max-width: 360px) {
+  :root {
+    --wheel-size: min(90vw, 55vh, 350px);
+  }
+  
+  .wheel-container {
+    padding: 0 0.3rem;
+    gap: 0.6rem;
+  }
+  
+  .title {
+    font-size: clamp(1.5rem, 9vw, 2rem);
+  }
+  
+  .session-badge-top {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem;
+    top: 0.4rem;
+    right: 0.4rem;
+  }
+  
+  .timer-top-left {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+    top: 0.4rem;
+    left: 0.4rem;
+  }
+  
+  .segment-label {
+    font-size: clamp(7px, 2.8vw, 10px);
+  }
+  
+  .spin-btn {
+    font-size: 0.75rem;
+    padding: 0.5rem 1.2rem;
+    letter-spacing: 0.2em;
+  }
+  
+  .celebrate-card {
+    padding: 1rem 1.2rem;
+  }
+  
+  .celebrate-card h2 {
+    font-size: 1.1rem;
+  }
+  
+  .guest-number {
+    font-size: 1rem;
+  }
+  
+  .prize-amount {
+    font-size: 0.9rem;
+  }
+  
+  .prize-amount b {
+    font-size: 1.1rem;
+  }
+}
+
 #root {
-  max-width: 1280px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 0rem;
   text-align: center;
+  width: 100%;
+  min-height: 100vh;
 }
 
 .app {
   color: var(--text);
   min-height: 100vh;
+  max-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #2a2e35 50%, var(--primary-dark) 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 5rem 1rem 1rem 1rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.app::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 20% 30%, rgba(0, 172, 180, 0.1), transparent 50%),
+              radial-gradient(circle at 80% 70%, rgba(247, 147, 30, 0.08), transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app > * {
+  position: relative;
+  z-index: 1;
 }
 
 .title {
-  font-size: clamp(2.2rem, 6vw, 3.2rem);
-  margin: 0 0 0.3rem 0;
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(1.8rem, 4vh, 3.2rem);
+  margin: 0 0 0.2rem 0;
   letter-spacing: -0.02em;
+  line-height: 1.2;
+  font-weight: 700;
 }
-.brand-red { color: #b8002a; }
-.brand-biller { color: #ffffff; }
+.brand-primary { 
+  font-family: 'Nunito', sans-serif;
+  color: var(--primary-teal);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+}
 
 .subtitle {
   color: var(--muted);
-  margin: 0 0 1.2rem 0;
-  font-size: clamp(0.95rem, 2.4vw, 1.1rem);
+  margin: 0 0 0.5rem 0;
+  font-size: clamp(0.85rem, 1.5vh, 1.1rem);
 }
 
 .wheel-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 100%;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  flex-shrink: 1;
+  min-height: 0;
+  margin-top: 0;
+}
+
+.top-header {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
   gap: 1rem;
+}
+
+.beamer-logo-small {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.timer-top-left {
+  margin-right: auto;
+}
+
+.session-badge-top {
+  margin-left: auto;
+}
+
+.beamer-logo-small {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-shrink: 0;
+}
+
+.logo-beamer-small {
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(1.2rem, 2.5vh, 1.8rem);
+  font-weight: 400;
+  color: #edeced;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  line-height: 1;
+}
+
+.timer-top-left {
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(1rem, 2vh, 1.5rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: rgba(57, 62, 70, 0.9);
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  border: 2px solid var(--primary-teal);
+  box-shadow: 0 4px 15px rgba(0, 172, 180, 0.3);
+  flex-shrink: 0;
+}
+
+.session-badge-top {
+  background: linear-gradient(90deg, var(--primary-teal), var(--primary-dark));
+  color: #fff;
+  padding: 0.4rem 1.2rem;
+  border-radius: 20px;
+  font-family: 'Century Gothic', sans-serif;
+  font-weight: 400;
+  font-size: clamp(0.8rem, 1.5vh, 1rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 15px rgba(0, 172, 180, 0.3);
+  flex-shrink: 0;
 }
 
 .wheel-wrapper {
   position: relative;
   width: var(--wheel-size);
   height: var(--wheel-size);
-  margin: 0 auto 0.8rem;
-  background: radial-gradient(120px circle at 50% 50%, rgba(255,0,51,0.18), transparent 60%), var(--card);
+  margin: 0 auto 0.5rem;
+  background: radial-gradient(120px circle at 50% 50%, rgba(0,172,180,0.2), transparent 60%), var(--card);
   border-radius: 999px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow), 0 0 40px rgba(0, 172, 180, 0.2);
+  border: 3px solid var(--primary-teal);
+  flex-shrink: 0;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .wheel {
@@ -68,16 +567,27 @@
 }
 
 .segment-label {
+  font-family: 'Century Gothic', sans-serif;
   font-size: clamp(10px, 1.8vw, 13px);
   fill: #ffffff;
-  font-weight: 700;
+  font-weight: 400;
   text-transform: uppercase;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 .segment-label.vertical {
   writing-mode: vertical-rl;
   glyph-orientation-vertical: 0;
   letter-spacing: 0.5px;
   line-height: 1;
+}
+.segment-label.won-text {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.won-segment {
+  filter: brightness(0.3);
+  transition: opacity 0.3s ease;
 }
 
 .pointer {
@@ -89,9 +599,9 @@
   height: 0;
   border-left: clamp(10px, 2vw, 16px) solid transparent;
   border-right: clamp(10px, 2vw, 16px) solid transparent;
-  border-bottom: clamp(16px, 3vw, 24px) solid var(--red);
+  border-bottom: clamp(16px, 3vw, 24px) solid var(--secondary-orange);
   /* Shadow flips upward to sit under the rotated pointer */
-  filter: drop-shadow(0 -4px 10px rgba(0, 255, 13, 0.426));
+  filter: drop-shadow(0 -4px 10px rgba(247, 147, 30, 0.5));
 }
 
 .controls {
@@ -100,18 +610,46 @@
   justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .controls {
+    padding: 0 0.5rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .controls {
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 2560px) {
+  .controls {
+    gap: 2rem;
+  }
 }
 
 .spin-btn {
-  background: linear-gradient(90deg, var(--red), var(--red-2));
+  background: linear-gradient(90deg, var(--primary-teal), var(--primary-dark));
   border: none;
   color: #fff;
-  font-weight: 800;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
   letter-spacing: 0.5em;
   text-transform: uppercase;
   padding: 0.5rem 2.5rem;
-  border-radius: 5px;
+  border-radius: 12px;
   box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.spin-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(0, 172, 180, 0.3);
 }
 .spin-btn:disabled {
   opacity: 0.7;
@@ -136,26 +674,105 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.7);
+  background: rgba(26, 29, 34, 0.9);
   z-index: 50;
   animation: fade-in 200ms ease-out;
+  cursor: pointer;
+}
+
+.close-celebration-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.8rem;
+  font-weight: 300;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+  line-height: 1;
+  padding: 0;
+}
+
+.close-celebration-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
 }
 .celebrate-card {
-  background: linear-gradient(180deg, #1a1a1a, #101010);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, var(--card), var(--near-black));
+  border: 2px solid var(--primary-teal);
   color: var(--text);
   border-radius: 16px;
   padding: 1.4rem 1.6rem;
   text-align: center;
   min-width: 280px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,0,51,0.25) inset;
+  box-shadow: 0 20px 60px rgba(0, 172, 180, 0.4), 0 0 0 2px var(--primary-teal) inset;
   position: relative;
   overflow: hidden;
+  cursor: default;
 }
 .celebrate-card.win {
-  background: linear-gradient(180deg, rgba(0, 128, 0, 0.25), rgba(0, 70, 0, 0.35));
-  border-color: rgba(0, 255, 64, 0.35);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 2px rgba(0,255,64,0.35) inset;
+  background: linear-gradient(180deg, rgba(0, 172, 180, 0.2), rgba(0, 172, 180, 0.1));
+  border-color: var(--primary-teal);
+  box-shadow: 0 20px 60px rgba(0, 172, 180, 0.5), 0 0 0 2px var(--primary-teal) inset;
+}
+
+/* Prize tier colors using Beamer palette - Dark theme */
+.celebrate-card.prize-gold {
+  background: linear-gradient(180deg, rgba(247, 147, 30, 0.3), rgba(247, 147, 30, 0.15));
+  border-color: var(--secondary-orange);
+  box-shadow: 0 20px 60px rgba(247, 147, 30, 0.4), 0 0 0 2px var(--secondary-orange) inset;
+}
+
+.celebrate-card.prize-green {
+  background: linear-gradient(180deg, rgba(0, 172, 180, 0.3), rgba(0, 172, 180, 0.15));
+  border-color: var(--primary-teal);
+  box-shadow: 0 20px 60px rgba(0, 172, 180, 0.4), 0 0 0 2px var(--primary-teal) inset;
+}
+
+.celebrate-card.prize-blue {
+  background: linear-gradient(180deg, rgba(0, 172, 180, 0.25), rgba(0, 172, 180, 0.12));
+  border-color: var(--primary-teal);
+  box-shadow: 0 20px 60px rgba(0, 172, 180, 0.35), 0 0 0 2px var(--primary-teal) inset;
+}
+
+.celebrate-card.prize-purple {
+  background: linear-gradient(180deg, rgba(0, 172, 180, 0.25), rgba(0, 172, 180, 0.12));
+  border-color: var(--primary-teal);
+  box-shadow: 0 20px 60px rgba(0, 172, 180, 0.35), 0 0 0 2px var(--primary-teal) inset;
+}
+
+.guest-number {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-teal);
+  margin: 0.8rem 0 0.4rem 0;
+  text-shadow: 0 2px 10px rgba(0, 172, 180, 0.5);
+}
+
+.prize-amount {
+  font-family: 'Century Gothic', sans-serif;
+  font-size: 1.3rem;
+  margin: 0.4rem 0 0 0;
+  color: var(--text);
+}
+
+.prize-amount b {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--secondary-orange);
+  text-shadow: 0 2px 10px rgba(247, 147, 30, 0.5);
 }
 .celebrate-card.lose {
   background: linear-gradient(180deg, rgba(128, 0, 21, 0.35), rgba(90, 0, 16, 0.45));
@@ -163,6 +780,8 @@
   box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,0,51,0.35) inset;
 }
 .celebrate-card h2 {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
   margin: 0 0 0.4rem 0;
 }
 .celebrate-card p {
@@ -176,9 +795,9 @@
 .confetti {
   position: absolute;
   inset: -40%;
-  background: radial-gradient(circle at 20% 30%, rgba(17, 255, 0, 0.3), transparent 40%),
-              radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08), transparent 35%),
-              radial-gradient(circle at 60% 70%, rgba(0, 255, 21, 0.22), transparent 40%);
+  background: radial-gradient(circle at 20% 30%, rgba(0, 172, 180, 0.3), transparent 40%),
+              radial-gradient(circle at 80% 20%, rgba(247, 147, 30, 0.25), transparent 35%),
+              radial-gradient(circle at 60% 70%, rgba(0, 172, 180, 0.28), transparent 40%);
   filter: blur(10px);
   animation: pulse 1.8s ease-in-out infinite;
 }

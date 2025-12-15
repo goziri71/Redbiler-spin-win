@@ -1,51 +1,115 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "./App.css";
 import SpinWheel from "./components/SpinWheel";
+import LandingPage from "./components/LandingPage";
 
 function App() {
-  // Dev-only override: set to "auto" | "win" | "lose". Comment or change as needed.
-  const FORCE_OUTCOME = "auto";
+  const [showLanding, setShowLanding] = useState(true);
+  const [currentSession, setCurrentSession] = useState(1);
+  const [timeDisplay, setTimeDisplay] = useState("10:00");
   const [celebrate, setCelebrate] = useState({
     show: false,
-    prize: "",
-    isWin: false,
+    guestNumber: null,
+    prizeAmount: null,
+    prizeColor: null,
   });
+
+  function formatCurrency(amount) {
+    return `₦${amount.toLocaleString()}`;
+  }
+
+  const celebrateTimeoutRef = useRef(null);
+
+  function handleResult(guestNumber, prizeAmount, prizeColor) {
+    // Clear any existing timeout
+    if (celebrateTimeoutRef.current) {
+      clearTimeout(celebrateTimeoutRef.current);
+    }
+
+    setCelebrate({
+      show: true,
+      guestNumber,
+      prizeAmount,
+      prizeColor,
+    });
+
+    // Auto-close after 10 seconds (increased from 5)
+    celebrateTimeoutRef.current = window.setTimeout(() => {
+      setCelebrate({
+        show: false,
+        guestNumber: null,
+        prizeAmount: null,
+        prizeColor: null,
+      });
+      celebrateTimeoutRef.current = null;
+    }, 10000);
+  }
+
+  function handleCloseCelebration() {
+    // Clear timeout if user closes manually
+    if (celebrateTimeoutRef.current) {
+      clearTimeout(celebrateTimeoutRef.current);
+      celebrateTimeoutRef.current = null;
+    }
+
+    setCelebrate({
+      show: false,
+      guestNumber: null,
+      prizeAmount: null,
+      prizeColor: null,
+    });
+  }
+
+  function handleSessionEnd() {
+    if (currentSession === 1) {
+      // Transition to session 2
+      if (window.confirm("Session 1 has ended! Start Session 2?")) {
+        setCurrentSession(2);
+      }
+    } else {
+      // Both sessions complete
+      alert("Both sessions have ended! Thank you for participating!");
+    }
+  }
+
+  if (showLanding) {
+    return <LandingPage onStart={() => setShowLanding(false)} />;
+  }
 
   return (
     <div className="app">
-      <h1 className="title">
-        <span className="brand-red">Red</span>
-        <span className="brand-biller">biller</span>
-      </h1>
-      <p className="subtitle"></p>
+      <div className="top-header">
+        <div className="beamer-logo-small">
+          <span className="logo-beamer-small">beamer</span>
+        </div>
+        <div className="timer-top-left">Time: {timeDisplay}</div>
+        <div className="session-badge-top">Session {currentSession}</div>
+      </div>
 
       <SpinWheel
-        enforceThreeWinsPerTen={true}
-        forceOutcome={FORCE_OUTCOME}
-        onResult={(label, isWin) => {
-          setCelebrate({ show: true, prize: label, isWin });
-          window.setTimeout(
-            () => setCelebrate({ show: false, prize: "", isWin: false }),
-            5000
-          );
-        }}
+        currentSession={currentSession}
+        onResult={handleResult}
+        onSessionEnd={handleSessionEnd}
+        onTimeUpdate={setTimeDisplay}
       />
 
       {celebrate.show && (
-        <div className="celebrate-overlay" role="status" aria-live="polite">
-          <div className={`celebrate-card ${celebrate.isWin ? "win" : "lose"}`}>
-            {celebrate.isWin && <div className="confetti" aria-hidden="true" />}
-            <h2>{celebrate.isWin ? "Congratulations! 🎉" : "Oops! 😅"}</h2>
-            {celebrate.isWin ? (
-              <p>
-                You won a <b>{celebrate.prize}</b>
-              </p>
-            ) : (
-              <>
-                <p>{celebrate.prize}</p>
-                <p className="note">Try again!</p>
-              </>
-            )}
+        <div
+          className="celebrate-overlay"
+          role="status"
+          aria-live="polite"
+          onClick={handleCloseCelebration}
+        >
+          <div
+            className={`celebrate-card win prize-${celebrate.prizeColor}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="confetti" aria-hidden="true" />
+            <h2>Congratulations! 🎉</h2>
+            <p className="guest-number">Guest #{celebrate.guestNumber}</p>
+            <p className="prize-amount">
+              You won <b>{formatCurrency(celebrate.prizeAmount)}</b>
+            </p>
           </div>
         </div>
       )}

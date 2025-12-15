@@ -290,7 +290,8 @@
   }
   
   .segment-label {
-    font-size: clamp(8px, 2.5vw, 11px);
+    font-size: clamp(7px, 1.8vw, 9px);
+    letter-spacing: 0;
   }
   
   .pointer {
@@ -333,6 +334,18 @@
   }
 }
 
+/* iPad and Tablets (481px to 1024px) */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .segment-label {
+    font-size: clamp(9px, 1.2vw, 11px);
+    letter-spacing: 0.01em;
+  }
+  
+  :root {
+    --wheel-size: min(85vw, 70vh, 550px);
+  }
+}
+
 /* Very Small Phones (up to 360px) */
 @media (max-width: 360px) {
   :root {
@@ -363,7 +376,8 @@
   }
   
   .segment-label {
-    font-size: clamp(7px, 2.8vw, 10px);
+    font-size: clamp(6px, 1.5vw, 8px);
+    letter-spacing: 0;
   }
   
   .spin-btn {
@@ -568,17 +582,30 @@
 
 .segment-label {
   font-family: 'Century Gothic', sans-serif;
-  font-size: clamp(10px, 1.8vw, 13px);
+  font-size: clamp(9px, 1.5vw, 13px);
   fill: #ffffff;
   font-weight: 400;
   text-transform: uppercase;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  letter-spacing: 0.02em;
 }
 .segment-label.vertical {
   writing-mode: vertical-rl;
   glyph-orientation-vertical: 0;
-  letter-spacing: 0.5px;
-  line-height: 1;
+  letter-spacing: 0.3px;
+  line-height: 1.1;
+}
+
+@media (max-width: 1024px) {
+  .segment-label.vertical {
+    letter-spacing: 0.1px;
+  }
+}
+
+@media (max-width: 480px) {
+  .segment-label.vertical {
+    letter-spacing: 0;
+  }
 }
 .segment-label.won-text {
   opacity: 0.4;

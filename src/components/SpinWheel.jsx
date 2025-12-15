@@ -41,6 +41,13 @@ function shuffleArray(array) {
 }
 
 function formatCurrency(amount) {
+  // Use compact format for mobile to prevent stretching
+  if (window.innerWidth <= 768) {
+    if (amount >= 100000) {
+      return `₦${(amount / 1000).toFixed(0)}K`;
+    }
+    return `₦${amount.toLocaleString()}`;
+  }
   return `₦${amount.toLocaleString()}`;
 }
 

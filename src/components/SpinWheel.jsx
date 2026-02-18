@@ -17,7 +17,7 @@ const SESSION_DURATION_MS = 2 * 60 * 60 * 1000;
 
 // ====== CONTROL PANEL ======
 // Change this to control spin outcomes:
-//   "normal" = random (fair)
+//   "normal" = 50/50 chance of win or fail
 //   "win"    = every spin lands on a prize
 //   "fail"   = every spin lands on Better Luck / Try Again
 const FORCE_MODE = "normal";
@@ -46,6 +46,8 @@ function getPrizeColor(name) {
   }
 }
 
+const failIndices = PRIZES.map((_, i) => i).filter((i) => !PRIZES[i].isWin);
+
 export default function SpinWheel({ onResult, onTimeUpdate }) {
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
@@ -55,6 +57,10 @@ export default function SpinWheel({ onResult, onTimeUpdate }) {
   const spinRef = useRef(null);
   const timerRef = useRef(null);
   const [timeRemaining, setTimeRemaining] = useState(SESSION_DURATION_MS);
+
+  const winIndices = PRIZES.map((_, i) => i).filter(
+    (i) => PRIZES[i].isWin && stock[i] > 0
+  );
 
   const total = PRIZES.length;
 
@@ -82,19 +88,6 @@ export default function SpinWheel({ onResult, onTimeUpdate }) {
     onTimeUpdate?.(display);
   }, [timeRemaining, onTimeUpdate]);
 
-  const winIndices = PRIZES.map((_, i) => i).filter(
-    (i) => PRIZES[i].isWin && stock[i] > 0
-  );
-
-  const failIndices = PRIZES.map((_, i) => i).filter(
-    (i) => !PRIZES[i].isWin
-  );
-
-  const availableIndices = PRIZES.map((_, i) => i).filter(
-    (i) => !PRIZES[i].isWin || stock[i] > 0
-  );
-
-  const allPrizesWon = winIndices.length === 0;
   const timeUp = timeRemaining <= 0;
 
   const colors = useMemo(() => {
@@ -116,20 +109,17 @@ export default function SpinWheel({ onResult, onTimeUpdate }) {
       return winIndices[randomInt(0, winIndices.length - 1)];
     }
 
-    if (FORCE_MODE === "fail" && failIndices.length > 0) {
+    if (FORCE_MODE === "fail" || winIndices.length === 0) {
       return failIndices[randomInt(0, failIndices.length - 1)];
     }
 
-    if (availableIndices.length === 0) return 0;
-    return availableIndices[randomInt(0, availableIndices.length - 1)];
+    // 50/50 coin flip, but only allow win if stock remains
+    const pool = Math.random() < 0.5 ? winIndices : failIndices;
+    return pool[randomInt(0, pool.length - 1)];
   }
 
   function spin() {
     if (isSpinning || timeUp) return;
-    if (availableIndices.length === 0) {
-      alert("All prizes have been won!");
-      return;
-    }
 
     setIsSpinning(true);
 
@@ -176,7 +166,6 @@ export default function SpinWheel({ onResult, onTimeUpdate }) {
           style={{ transform: `rotate(${rotation}deg)` }}
         >
           {PRIZES.map((prize, i) => {
-            const outOfStock = prize.isWin && stock[i] <= 0;
             const startAngle = i * sliceAngle - Math.PI / 2;
             const endAngle = (i + 1) * sliceAngle - Math.PI / 2;
             const x1 = center.x + radius * Math.cos(startAngle);
@@ -189,33 +178,15 @@ export default function SpinWheel({ onResult, onTimeUpdate }) {
 
             return (
               <g key={i}>
-                <path
-                  d={path}
-                  fill={colors[i]}
-                  opacity={outOfStock ? 0.3 : 1}
-                  className={outOfStock ? "won-segment" : ""}
-                />
-                {prize.isWin && (
-                  <text
-                    x={center.x}
-                    y={center.y - radius * 0.88}
-                    transform={`rotate(${getSegmentAngle(i, total)}, ${center.x}, ${center.y})`}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fill={textColor}
-                    className={`segment-qty ${outOfStock ? "won-text" : ""}`}
-                  >
-                    x{stock[i]}
-                  </text>
-                )}
+                <path d={path} fill={colors[i]} />
                 <text
                   x={center.x}
-                  y={center.y - radius * 0.6}
+                  y={center.y - radius * 0.65}
                   transform={`rotate(${getSegmentAngle(i, total)}, ${center.x}, ${center.y})`}
                   textAnchor="middle"
                   dominantBaseline="middle"
                   fill={textColor}
-                  className={`segment-label vertical ${outOfStock ? "won-text" : ""}`}
+                  className="segment-label vertical"
                 >
                   {prize.name}
                 </text>
@@ -230,18 +201,11 @@ export default function SpinWheel({ onResult, onTimeUpdate }) {
         <button
           className="spin-btn"
           onClick={spin}
-          disabled={isSpinning || availableIndices.length === 0 || timeUp}
+          disabled={isSpinning || timeUp}
         >
-          {isSpinning
-            ? "Spinning..."
-            : timeUp
-            ? "Time's Up"
-            : allPrizesWon
-            ? "All Prizes Won"
-            : "Spin"}
+          {isSpinning ? "Spinning..." : timeUp ? "Time's Up" : "Spin"}
         </button>
       </div>
-
     </div>
   );
 }

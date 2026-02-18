@@ -15,6 +15,14 @@ const PRIZES = [
 
 const SESSION_DURATION_MS = 2 * 60 * 60 * 1000;
 
+// ====== CONTROL PANEL ======
+// Change this to control spin outcomes:
+//   "normal" = random (fair)
+//   "win"    = every spin lands on a prize
+//   "fail"   = every spin lands on Better Luck / Try Again
+const FORCE_MODE = "normal";
+// ============================
+
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -44,8 +52,6 @@ export default function SpinWheel({ onResult, onTimeUpdate }) {
   const [stock, setStock] = useState(() =>
     PRIZES.map((p) => (p.isWin ? p.quantity : null))
   );
-  const [forceMode, setForceMode] = useState("normal");
-  const [showAdmin, setShowAdmin] = useState(false);
   const spinRef = useRef(null);
   const timerRef = useRef(null);
   const [timeRemaining, setTimeRemaining] = useState(SESSION_DURATION_MS);
@@ -106,11 +112,11 @@ export default function SpinWheel({ onResult, onTimeUpdate }) {
   }, [total]);
 
   function pickTargetIndex() {
-    if (forceMode === "win" && winIndices.length > 0) {
+    if (FORCE_MODE === "win" && winIndices.length > 0) {
       return winIndices[randomInt(0, winIndices.length - 1)];
     }
 
-    if (forceMode === "fail" && failIndices.length > 0) {
+    if (FORCE_MODE === "fail" && failIndices.length > 0) {
       return failIndices[randomInt(0, failIndices.length - 1)];
     }
 
@@ -236,30 +242,6 @@ export default function SpinWheel({ onResult, onTimeUpdate }) {
         </button>
       </div>
 
-      <button
-        className="admin-toggle"
-        onClick={() => setShowAdmin((v) => !v)}
-      >
-        ⚙
-      </button>
-
-      {showAdmin && (
-        <div className="admin-bar">
-          <span className="admin-label">Mode:</span>
-          {["normal", "win", "fail"].map((mode) => (
-            <button
-              key={mode}
-              className={`admin-btn ${forceMode === mode ? "active" : ""} admin-btn-${mode}`}
-              onClick={() => setForceMode(mode)}
-            >
-              {mode === "normal" ? "Normal" : mode === "win" ? "Force Win" : "Force Fail"}
-            </button>
-          ))}
-          <span className="admin-stock">
-            Prizes left: {winIndices.length > 0 ? stock.filter((s) => s !== null && s > 0).reduce((a, b) => a + b, 0) : 0}
-          </span>
-        </div>
-      )}
     </div>
   );
 }

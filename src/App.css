@@ -572,6 +572,22 @@
   flex-shrink: 0;
 }
 
+.powered-by {
+  margin-left: auto;
+  color: var(--muted);
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(0.7rem, 1.2vh, 0.9rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.redbiller-brand {
+  color: var(--primary-teal);
+  font-weight: 700;
+}
+
 .wheel-wrapper {
   position: relative;
   width: var(--wheel-size);
@@ -592,6 +608,20 @@
   margin: var(--wheel-margin);
   transition: transform 3.8s cubic-bezier(0.19, 1, 0.22, 1);
   filter: drop-shadow(0 6px 20px rgba(0,0,0,0.45));
+}
+
+.segment-qty {
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(8px, 1.4vw, 12px);
+  font-weight: 700;
+  fill: #ffffff;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  opacity: 0.85;
+}
+
+.segment-qty.won-text {
+  opacity: 0.3;
+  text-decoration: line-through;
 }
 
 .segment-label {
@@ -873,4 +903,99 @@
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+/* Admin controls */
+.admin-toggle {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(57, 62, 70, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.2s ease;
+}
+
+.admin-toggle:hover {
+  background: rgba(57, 62, 70, 0.9);
+  color: var(--text);
+}
+
+.admin-bar {
+  position: fixed;
+  bottom: 3.5rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(26, 29, 34, 0.95);
+  border: 1px solid rgba(0, 172, 180, 0.3);
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  z-index: 200;
+  flex-wrap: wrap;
+  animation: fade-in 150ms ease-out;
+}
+
+.admin-label {
+  color: var(--muted);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.admin-btn {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.35rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(57, 62, 70, 0.5);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-btn:hover {
+  background: rgba(57, 62, 70, 0.8);
+  color: var(--text);
+}
+
+.admin-btn.active.admin-btn-normal {
+  background: rgba(0, 172, 180, 0.2);
+  border-color: var(--primary-teal);
+  color: var(--primary-teal);
+}
+
+.admin-btn.active.admin-btn-win {
+  background: rgba(0, 200, 80, 0.2);
+  border-color: #00c850;
+  color: #00c850;
+}
+
+.admin-btn.active.admin-btn-fail {
+  background: rgba(255, 60, 60, 0.2);
+  border-color: #ff3c3c;
+  color: #ff3c3c;
+}
+
+.admin-stock {
+  color: var(--muted);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.7rem;
+  margin-left: 0.5rem;
+  font-variant-numeric: tabular-nums;
 }

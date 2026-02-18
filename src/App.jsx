@@ -6,23 +6,17 @@ import BeamerLogo from "./components/BeamerLogo";
 
 function App() {
   const [showLanding, setShowLanding] = useState(true);
-  const [currentSession, setCurrentSession] = useState(1);
   const [timeDisplay, setTimeDisplay] = useState("10:00");
   const [celebrate, setCelebrate] = useState({
     show: false,
-    guestNumber: null,
-    prizeAmount: null,
+    prizeName: null,
     prizeColor: null,
+    isWin: false,
   });
-
-  function formatCurrency(amount) {
-    return `₦${amount.toLocaleString()}`;
-  }
 
   const celebrateTimeoutRef = useRef(null);
 
-  function handleResult(guestNumber, prizeAmount, prizeColor) {
-    // Clear any existing timeout
+  function handleResult(prizeName, prizeColor, isWin) {
     if (celebrateTimeoutRef.current) {
       clearTimeout(celebrateTimeoutRef.current);
       celebrateTimeoutRef.current = null;
@@ -30,14 +24,13 @@ function App() {
 
     setCelebrate({
       show: true,
-      guestNumber,
-      prizeAmount,
+      prizeName,
       prizeColor,
+      isWin,
     });
   }
 
   function handleCloseCelebration() {
-    // Clear timeout if user closes manually
     if (celebrateTimeoutRef.current) {
       clearTimeout(celebrateTimeoutRef.current);
       celebrateTimeoutRef.current = null;
@@ -45,27 +38,10 @@ function App() {
 
     setCelebrate({
       show: false,
-      guestNumber: null,
-      prizeAmount: null,
+      prizeName: null,
       prizeColor: null,
+      isWin: false,
     });
-  }
-
-  function handleStartSession2() {
-    handleCloseCelebration();
-    setCurrentSession(2);
-  }
-
-  function handleSessionEnd() {
-    if (currentSession === 1) {
-      // Transition to session 2
-      if (window.confirm("Session 1 has ended! Start Session 2?")) {
-        setCurrentSession(2);
-      }
-    } else {
-      // Both sessions complete
-      alert("Both sessions have ended! Thank you for participating!");
-    }
   }
 
   if (showLanding) {
@@ -80,24 +56,11 @@ function App() {
         </div>
         <div className="header-left-section">
           <div className="timer-top-left">Time: {timeDisplay}</div>
-          {currentSession === 1 && (
-            <button
-              className="start-session-btn-header"
-              onClick={handleStartSession2}
-            >
-              Start Session 2
-            </button>
-          )}
         </div>
-        <div className="session-badge-top">Session {currentSession}</div>
+        <div className="powered-by">Powered by <span className="redbiller-brand">Redbiller</span></div>
       </div>
 
-      <SpinWheel
-        currentSession={currentSession}
-        onResult={handleResult}
-        onSessionEnd={handleSessionEnd}
-        onTimeUpdate={setTimeDisplay}
-      />
+      <SpinWheel onResult={handleResult} onTimeUpdate={setTimeDisplay} />
 
       {celebrate.show && (
         <div
@@ -107,15 +70,29 @@ function App() {
           onClick={handleCloseCelebration}
         >
           <div
-            className={`celebrate-card win prize-${celebrate.prizeColor}`}
+            className={`celebrate-card ${
+              celebrate.isWin
+                ? `win prize-${celebrate.prizeColor}`
+                : "lose"
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="confetti" aria-hidden="true" />
-            <h2>Congratulations! 🎉</h2>
-            <p className="guest-number">Guest #{celebrate.guestNumber}</p>
-            <p className="prize-amount">
-              You won <b>{formatCurrency(celebrate.prizeAmount)}</b>
-            </p>
+            {celebrate.isWin ? (
+              <>
+                <h2>Congratulations! 🎉</h2>
+                <p className="prize-amount">
+                  You won a <b>{celebrate.prizeName}</b>
+                </p>
+              </>
+            ) : (
+              <>
+                <h2>
+                  {celebrate.prizeName === "Try Again" ? "🔄" : "😔"}
+                </h2>
+                <p className="prize-amount">{celebrate.prizeName}</p>
+              </>
+            )}
           </div>
         </div>
       )}

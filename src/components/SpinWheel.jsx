@@ -1,16 +1,12 @@
 import { useMemo, useRef, useState, useEffect } from "react";
 
 const PRIZES = [
-  { name: "Bottle", quantity: 12, isWin: true },
-  { name: "Airpods", quantity: 6, isWin: true },
-  { name: "Mouse", quantity: 10, isWin: true },
+  { name: "Bottle", quantity: 4, isWin: true, weight: 1 },
+  { name: "Mouse", quantity: 0, isWin: true, weight: 0 },
   { name: "Better Luck Next Time", isWin: false },
-  { name: "Mousepad", quantity: 12, isWin: true },
-  { name: "Speaker", quantity: 1, isWin: true },
-  { name: "Notepad", quantity: 8, isWin: true },
-  { name: "LED Light", quantity: 10, isWin: true },
-  { name: "Power Bank", quantity: 2, isWin: true },
-  { name: "Try Again", isWin: false },
+  { name: "Mousepad", quantity: 0, isWin: true, weight: 0 },
+  { name: "LED Light", quantity: 0, isWin: true, weight: 0 },
+  { name: "Try Again", isWin: false }, 
 ];
 
 const SESSION_DURATION_MS = 2 * 60 * 60 * 1000;
@@ -20,7 +16,7 @@ const SESSION_DURATION_MS = 2 * 60 * 60 * 1000;
 //   "normal" = 50/50 chance of win or fail
 //   "win"    = every spin lands on a prize
 //   "fail"   = every spin lands on Better Luck / Try Again
-const FORCE_MODE = "normal";
+const FORCE_MODE = "win";
 // ============================
 
 function randomInt(min, max) {
@@ -33,11 +29,6 @@ function getSegmentAngle(index, total) {
 
 function getPrizeColor(name) {
   switch (name) {
-    case "Speaker":
-    case "Power Bank":
-      return "gold";
-    case "Airpods":
-      return "green";
     case "Mouse":
     case "LED Light":
       return "blue";
@@ -104,9 +95,20 @@ export default function SpinWheel({ onResult, onTimeUpdate }) {
     );
   }, [total]);
 
+  function pickWeightedWin() {
+    const weights = winIndices.map((i) => PRIZES[i].weight ?? 1);
+    const totalWeight = weights.reduce((a, b) => a + b, 0);
+    let roll = Math.random() * totalWeight;
+    for (let j = 0; j < winIndices.length; j++) {
+      roll -= weights[j];
+      if (roll <= 0) return winIndices[j];
+    }
+    return winIndices[winIndices.length - 1];
+  }
+
   function pickTargetIndex() {
     if (FORCE_MODE === "win" && winIndices.length > 0) {
-      return winIndices[randomInt(0, winIndices.length - 1)];
+      return pickWeightedWin();
     }
 
     if (FORCE_MODE === "fail" || winIndices.length === 0) {
@@ -114,8 +116,10 @@ export default function SpinWheel({ onResult, onTimeUpdate }) {
     }
 
     // 50/50 coin flip, but only allow win if stock remains
-    const pool = Math.random() < 0.5 ? winIndices : failIndices;
-    return pool[randomInt(0, pool.length - 1)];
+    if (Math.random() < 0.5) {
+      return pickWeightedWin();
+    }
+    return failIndices[randomInt(0, failIndices.length - 1)];
   }
 
   function spin() {
